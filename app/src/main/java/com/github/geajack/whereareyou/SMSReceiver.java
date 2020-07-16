@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +23,10 @@ import androidx.core.app.NotificationCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class SMSReceiver extends BroadcastReceiver {
 
@@ -66,7 +72,7 @@ public class SMSReceiver extends BroadcastReceiver {
                     new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            Intent notificationIntent = new Intent(context, MainActivity.class);
+                            /*Intent notificationIntent = new Intent(context, MainActivity.class);
                             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
@@ -85,10 +91,23 @@ public class SMSReceiver extends BroadcastReceiver {
                             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
                             notificationManager.createNotificationChannel(channel);
 
-                            notificationManager.notify(0, builder.build());
+                            notificationManager.notify(0, builder.build());*/
 
+                            Geocoder gcd = new Geocoder(context, Locale.getDefault());
+                            List<Address> addresses = null;
+                            try {
+                                addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            String locality = null;
+                            if (addresses.size() > 0) {
+                                locality = addresses.get(0).getLocality();
+                            }
+
+                            String message = "I am at " + location.getLongitude() + ", " + location.getLatitude() + " in " + locality;
                             SmsManager smsManager = SmsManager.getDefault();
-                            smsManager.sendTextMessage(phoneNumber, null, String.valueOf(location.getLatitude()), null, null);
+                            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
                         }
                     }
             );
