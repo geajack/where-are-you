@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 
 import androidx.annotation.RequiresApi;
@@ -30,6 +31,7 @@ public class SMSReceiver extends BroadcastReceiver {
 
         String strMessage = "";
         String strMsgBody = "";
+        String strMsgSrc = "";
 
         if (extras != null) {
             Object[] smsextras = (Object[]) extras.get("pdus");
@@ -38,7 +40,7 @@ public class SMSReceiver extends BroadcastReceiver {
                 SmsMessage smsmsg = SmsMessage.createFromPdu((byte[]) smsextras[i]);
 
                 strMsgBody = smsmsg.getMessageBody().toString();
-                String strMsgSrc = smsmsg.getOriginatingAddress();
+                strMsgSrc = smsmsg.getOriginatingAddress();
 
                 strMessage += "SMS from " + strMsgSrc + " : " + strMsgBody;
             }
@@ -48,6 +50,7 @@ public class SMSReceiver extends BroadcastReceiver {
         if (strMsgBody.trim().toLowerCase().equals("where are you"))
         {
             final String message = strMessage;
+            final String phoneNumber = strMsgSrc;
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -83,6 +86,9 @@ public class SMSReceiver extends BroadcastReceiver {
                             notificationManager.createNotificationChannel(channel);
 
                             notificationManager.notify(0, builder.build());
+
+                            SmsManager smsManager = SmsManager.getDefault();
+                            smsManager.sendTextMessage(phoneNumber, null, String.valueOf(location.getLatitude()), null, null);
                         }
                     }
             );
