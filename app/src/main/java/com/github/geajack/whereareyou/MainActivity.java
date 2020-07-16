@@ -1,5 +1,6 @@
 package com.github.geajack.whereareyou;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -45,6 +46,23 @@ public class MainActivity extends AppCompatActivity {
             grantPermissionsButton.setOnClickListener(new PermissionsButtonListener(this, (String[]) permissionsToRequest.toArray(new String[0])));
         }
         else
+        {
+            setContentView(R.layout.activity_main);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean somePermissionsDenied = false;
+        for (int i = 0; i < grantResults.length; i++)
+        {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
+            {
+                somePermissionsDenied = true;
+            }
+        }
+
+        if (!somePermissionsDenied)
         {
             setContentView(R.layout.activity_main);
         }
