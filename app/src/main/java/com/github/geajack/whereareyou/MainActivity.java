@@ -6,11 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +52,39 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            setContentView(R.layout.activity_main);
+            goToMainLayout();
         }
+    }
+
+    private void goToMainLayout()
+    {
+        setContentView(R.layout.activity_main);
+        final EditText phraseInput = (EditText) findViewById(R.id.phraseInput);
+        phraseInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String secretPhrase = phraseInput.getText().toString();
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("secret_phrase", secretPhrase);
+                editor.apply();
+            }
+        });
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String secretPhrase = preferences.getString("secret_phrase", "where are you");
+
+        phraseInput.setText(secretPhrase);
     }
 
     @Override
@@ -64,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!somePermissionsDenied)
         {
-            setContentView(R.layout.activity_main);
+            goToMainLayout();
         }
     }
 

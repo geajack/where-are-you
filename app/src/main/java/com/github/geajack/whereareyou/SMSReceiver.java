@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -14,6 +15,7 @@ import android.location.Location;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 
@@ -47,7 +49,10 @@ public class SMSReceiver extends BroadcastReceiver {
                 String messageBody = message.getMessageBody();
                 String phoneNumber = message.getOriginatingAddress();
 
-                if (messageBody.trim().toLowerCase().equals("where are you"))
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+                String secretPhrase = preferences.getString("secret_phrase", "where are you");
+
+                if (messageBody.trim().toLowerCase().equals(secretPhrase.trim().toLowerCase()))
                 {
                     FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
                     try
