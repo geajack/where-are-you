@@ -94,8 +94,8 @@ public class SMSReceiver extends BroadcastReceiver {
             } catch (IOException ignored) {
             }
 
-            BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
-            int battery = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+            BatteryManager batteryManager = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+            int battery = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
 
             String message = "I am at (" + location.getLatitude() + ", " + location.getLongitude() + ")";
             if (locality != null)
