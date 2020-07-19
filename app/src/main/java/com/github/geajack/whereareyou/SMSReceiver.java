@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.text.format.DateUtils;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -28,6 +29,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -94,6 +98,9 @@ public class SMSReceiver extends BroadcastReceiver {
             } catch (IOException ignored) {
             }
 
+
+            CharSequence readableTime = DateUtils.getRelativeTimeSpanString(location.getTime());
+
             BatteryManager batteryManager = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
             int battery = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
 
@@ -102,6 +109,9 @@ public class SMSReceiver extends BroadcastReceiver {
             {
                 message += " in " + locality;
             }
+
+            message += " as of " + readableTime;
+
             message += ". My battery level is " + battery + "%.";
 
             SmsManager smsManager = SmsManager.getDefault();
